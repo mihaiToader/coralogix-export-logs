@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import icon from '../assets/icon.svg';
 import './App.global.css';
+import TokePage from './components/pages/TokenPage';
 
 const Hello = () => {
   const onClick = () => {
@@ -31,7 +32,8 @@ export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/" component={Hello} />
+        <Route path="/" component={TokePage} />
+        <Route path="/search" component={Hello} />
       </Switch>
     </Router>
   );
