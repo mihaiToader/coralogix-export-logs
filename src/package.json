@@ -1,0 +1,18 @@
+{
+  "name": "coralogix-export-logs",
+  "productName": "coralogix-export-logs",
+  "version": "1.0.0",
+  "description": "App to download logs locally from coralogix",
+  "main": "./main.prod.js",
+  "author": {
+    "name": "Mihai Toader",
+    "email": "toadermihai16@gmail.com",
+    "url": ""
+  },
+  "scripts": {
+    "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",
+    "postinstall": "yarn electron-rebuild"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
