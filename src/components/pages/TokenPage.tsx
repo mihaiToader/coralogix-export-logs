@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 
 import Channels from '../../common/channels';
+import Footer from '../footer/Footer';
 
 const useStyles = makeStyles({
   container: {
@@ -50,32 +51,39 @@ const TokePage = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <Card>
-        <CardContent className={styles.cardContent}>
-          <Typography className={styles.title} variant="h5" component="h3">
-            Set your coralogix token:
-          </Typography>
-          <TextField
-            id="outlined-basic"
-            label="Coralogix token"
-            variant="outlined"
-            onChange={(event) => setToken(event.target.value)}
-            value={token || ''}
-            error={!!error}
-            helperText={error || ''}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            className={styles.button}
-            onClick={onSearch}
-          >
-            Start searching
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <div className={styles.container}>
+        <Card>
+          <CardContent className={styles.cardContent}>
+            <Typography className={styles.title} variant="h5" component="h3">
+              Set your coralogix token:
+            </Typography>
+            <TextField
+              label="Coralogix token"
+              variant="outlined"
+              onChange={(event) => {
+                if (error) {
+                  setError(null);
+                }
+                setToken(event.target.value);
+              }}
+              value={token || ''}
+              error={!!error}
+              helperText={error || ''}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              className={styles.button}
+              onClick={onSearch}
+            >
+              Start searching
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+      <Footer />
+    </>
   );
 };
 
