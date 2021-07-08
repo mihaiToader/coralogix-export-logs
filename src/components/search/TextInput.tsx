@@ -9,12 +9,27 @@ const useStyles = makeStyles({
   },
 });
 
-const TextInput = () => {
+type Props = {
+  label: string;
+  defaultValue?: string;
+  onChange: (value: string) => void;
+  error?: string | null;
+};
+
+const TextInput = ({ label, defaultValue, onChange, error }: Props) => {
   const styles = useStyles();
 
   return (
     <Paper className={styles.container}>
-      <TextField size="small" label="Next appointment" variant="outlined" />
+      <TextField
+        size="small"
+        label={label}
+        variant="outlined"
+        onChange={(event) => onChange(event.target.value)}
+        defaultValue={defaultValue || ''}
+        error={!!error}
+        helperText={error || ''}
+      />
     </Paper>
   );
 };

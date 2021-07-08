@@ -1,36 +1,31 @@
 import getCurrentDateTime from '../../utils/getCurrentDateTime';
 import formatDateTime from '../../utils/formatDateTime';
+import FilterCollection from './FilterCollection';
+import { FilterType } from './Filter';
 
 const createDefaultFilters = () => {
   const currentDate = getCurrentDateTime();
 
-  return {
-    query: {
-      bool: {
-        must: [
-          {
-            term: {
-              'coralogix.metadata.applicationName': 'olx-pk-live',
-            },
-          },
-          {
-            range: {
-              'coralogix.timestamp': {
-                gte: formatDateTime({
-                  ...currentDate,
-                  hours: currentDate.hours - 1,
-                }),
-                lte: formatDateTime(currentDate),
-                time_zone: '+02:00',
-              },
-            },
-          },
-        ],
-      },
-    },
-    sort: [{ 'coralogix.timestamp': { order: 'desc' } }],
-    size: 1,
-  };
+  const filterCollection = new FilterCollection([]);
+
+  filterCollection.createFilter(
+    'coralogix.timestamp',
+    FilterType.RANGE,
+    [
+      formatDateTime({ ...currentDate, hours: currentDate.hours - 1 }),
+      formatDateTime({ ...currentDate, hours: currentDate.hours }),
+    ],
+    ['From', 'To']
+  );
+
+  filterCollection.createFilter(
+    'coralogix.metadata.applicationName',
+    FilterType.EXACT,
+    'olx-pk-live',
+    'App name'
+  );
+
+  return filterCollection.getFilters();
 };
 
 export default createDefaultFilters;

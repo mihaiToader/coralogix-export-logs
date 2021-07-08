@@ -9,18 +9,25 @@ const useStyles = makeStyles({
   },
 });
 
-const DateTimePicker = () => {
+type Props = {
+  label: string;
+  defaultValue: string;
+  onChange: (value: string) => void;
+};
+
+const DateTimePicker = ({ label, defaultValue, onChange }: Props) => {
   const styles = useStyles();
 
   return (
     <Paper className={styles.container}>
       <TextField
-        label="Next appointment"
+        label={label}
         type="datetime-local"
-        defaultValue="2017-05-24T10:30"
+        defaultValue={defaultValue}
         InputLabelProps={{
           shrink: true,
         }}
+        onChange={(event) => onChange(event.target.value)}
       />
     </Paper>
   );
