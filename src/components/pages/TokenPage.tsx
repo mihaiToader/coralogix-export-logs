@@ -6,8 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router-dom';
+import { ipcRenderer } from 'electron';
 
-import TokenContext from '../context/TokenContext';
+import Channels from '../../common/channels';
 
 const useStyles = makeStyles({
   container: {
@@ -31,18 +32,21 @@ const useStyles = makeStyles({
 const TokePage = () => {
   const styles = useStyles();
   const history = useHistory();
-  const tokenContext = React.useContext(TokenContext);
-  const [token, setToken] = React.useState<string | null>(tokenContext.token);
+  const [token, setToken] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const onSearch = () => {
     if (!token || !token.trim()) {
-      setError('The token is mandatory');
+      setError('The token is mandatory!');
       return;
     }
-    setError(null);
-    tokenContext.setToken(token);
-    history.push('/search');
+    const succeeded = ipcRenderer.sendSync(Channels.SET_TOKEN, token);
+    if (succeeded) {
+      setError(null);
+      history.push('/search');
+    } else {
+      setError('Token invalid!');
+    }
   };
 
   return (
@@ -50,7 +54,7 @@ const TokePage = () => {
       <Card>
         <CardContent className={styles.cardContent}>
           <Typography className={styles.title} variant="h5" component="h3">
-            Input your coralogix token:
+            Set your coralogix token:
           </Typography>
           <TextField
             id="outlined-basic"
