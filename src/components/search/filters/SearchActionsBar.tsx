@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import TextInput from '../TextInput';
 import Filter, { FilterType } from './Filter';
 
@@ -21,12 +23,13 @@ const useStyles = makeStyles({
 
 type Props = {
   filters: Filter[];
-  addFilter: (name: string, type: string) => void;
+  addFilter: (name: string, type: string) => string | null;
 };
 
 const SearchActionsBar = ({ filters, addFilter }: Props) => {
   const styles = useStyles();
   const [filter, setFilter] = React.useState('');
+  const [isPositive, setIsPositive] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
   const addNewFilter = () => {
@@ -34,8 +37,16 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
       setError('Can not be empty!');
       return;
     }
+    const errorMessage = addFilter(
+      filter,
+      isPositive ? FilterType.MATCH : FilterType.EXCLUDE
+    );
+    if (errorMessage) {
+      setError(errorMessage);
+      return;
+    }
     setError(null);
-    addFilter(filter, FilterType.MATCH);
+    setFilter('');
   };
 
   return (
@@ -51,7 +62,21 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
               }
             }}
             error={error}
+            value={filter}
+            showNotIcon={!isPositive}
           />
+        </Grid>
+        <Grid item xs={1} className={styles.buttonContainer}>
+          <Tooltip
+            title={isPositive ? 'Filter will match' : 'Filter will NOT match'}
+          >
+            <Switch
+              checked={isPositive}
+              onChange={(event) => setIsPositive(event.target.checked)}
+              name="isPositive"
+              color="secondary"
+            />
+          </Tooltip>
         </Grid>
         <Grid item xs={3} className={styles.buttonContainer}>
           <Button variant="contained" color="primary" onClick={addNewFilter}>

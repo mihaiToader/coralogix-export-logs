@@ -1,5 +1,6 @@
 import Filter, { FilterType } from './Filter';
 import RangeFilter from './RangeFilter';
+import FilterError from './FilterError';
 
 class FilterCollection {
   filters: Filter[] = [];
@@ -8,12 +9,15 @@ class FilterCollection {
     this.filters = filters;
   }
 
-  createFilter(name: string, type: string, value: any, label: any) {
+  createFilter(name: string, type: string, value: any, label: any, removable = true) {
+    if (this.getFilter(name)) {
+      throw new FilterError('Filter already exists!');
+    }
     let filter = null;
     if (type === FilterType.RANGE) {
-      filter = new RangeFilter(name, type, value[0], value[1], label || name);
+      filter = new RangeFilter(name, type, value[0], value[1], label || name, removable);
     } else {
-      filter = new Filter(name, type, value, label || name);
+      filter = new Filter(name, type, value, label || name, removable);
     }
     this.filters.push(filter);
     return filter;
@@ -35,6 +39,13 @@ class FilterCollection {
     const filter = this.getFilter(name);
     if (filter) {
       filter.setValue(value);
+    }
+  }
+
+  removeFilter(name: string) {
+    const index = this.filters.findIndex((filter: Filter) => filter.name === name);
+    if (index > -1) {
+      this.filters.splice(index, 1);
     }
   }
 

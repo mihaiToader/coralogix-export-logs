@@ -54,7 +54,7 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'Coralogix logs',
       submenu: [
         {
           label: 'About ElectronReact',
@@ -256,9 +256,11 @@ export default class MenuBuilder {
         label: 'Help',
         submenu: [
           {
-            label: 'Learn More',
+            label: 'This shit is not working',
             click() {
-              shell.openExternal('https://electronjs.org');
+              shell.openExternal(
+                'https://cdn.quotesgram.com/img/86/36/1918207648-i-am-sorry__282_29.jpg'
+              );
             },
           },
           {

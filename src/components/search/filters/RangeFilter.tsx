@@ -12,9 +12,10 @@ class RangeFilter extends Filter {
     type: string,
     minValue: string,
     maxValue: string,
-    label: string[]
+    label: string[],
+    removable: boolean
   ) {
-    super(name, type, [minValue, maxValue], '');
+    super(name, type, [minValue, maxValue], '', removable);
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.label = label;

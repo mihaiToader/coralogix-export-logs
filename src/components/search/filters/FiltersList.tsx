@@ -7,9 +7,10 @@ import TextInput from '../TextInput';
 type Props = {
   filters: Filter[];
   setFilterValue: (name: string, value: any) => void;
+  removeFilter: (name: string) => void;
 };
 
-const FiltersList = ({ filters, setFilterValue }: Props) => {
+const FiltersList = ({ filters, setFilterValue, removeFilter }: Props) => {
   return filters.map((filter: Filter) => {
     if (filter.type === FilterType.RANGE) {
       return (
@@ -37,6 +38,8 @@ const FiltersList = ({ filters, setFilterValue }: Props) => {
           label={filter.label}
           defaultValue={filter.getValue()}
           onChange={(value) => setFilterValue(filter.name, value)}
+          onClose={filter.removable ? () => removeFilter(filter.name) : null}
+          showNotIcon={filter.type === FilterType.EXCLUDE}
         />
       </Grid>
     );

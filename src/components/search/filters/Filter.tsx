@@ -14,11 +14,20 @@ class Filter {
 
   label: any;
 
-  constructor(name: string, type: string, value: any, label: string) {
+  removable: boolean;
+
+  constructor(
+    name: string,
+    type: string,
+    value: any,
+    label: string,
+    removable = true
+  ) {
     this.name = name;
     this.type = type;
     this.value = value;
     this.label = label;
+    this.removable = removable;
   }
 
   getValue() {

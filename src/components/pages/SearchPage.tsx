@@ -11,19 +11,21 @@ const useStyles = makeStyles({
   container: {
     flexGrow: 1,
     padding: '20px',
+    height: '425px',
+    overflow: 'auto',
   },
 });
 
 const SearchPage = () => {
   const styles = useStyles();
-  const { filters, addFilter, setFilterValue } = useFilters();
+  const { filters, addFilter, removeFilter, setFilterValue } = useFilters();
 
   return (
     <>
       <SearchMenu />
       <div className={styles.container}>
         <Grid container spacing={2}>
-          <FiltersList filters={filters} setFilterValue={setFilterValue} />
+          <FiltersList filters={filters} setFilterValue={setFilterValue} removeFilter={removeFilter} />
         </Grid>
       </div>
       <SearchActionsBar filters={filters} addFilter={addFilter} />

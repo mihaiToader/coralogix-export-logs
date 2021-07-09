@@ -15,14 +15,16 @@ const createDefaultFilters = () => {
       formatDateTime({ ...currentDate, hours: currentDate.hours - 1 }),
       formatDateTime({ ...currentDate, hours: currentDate.hours }),
     ],
-    ['From', 'To']
+    ['From', 'To'],
+    false
   );
 
   filterCollection.createFilter(
     'coralogix.metadata.applicationName',
     FilterType.EXACT,
     'olx-pk-live',
-    'App name'
+    'App name',
+    false
   );
 
   return filterCollection.getFilters();
