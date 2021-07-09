@@ -15,16 +15,16 @@ const FiltersList = ({ filters, setFilterValue, removeFilter }: Props) => {
     if (filter.type === FilterType.RANGE) {
       return (
         <React.Fragment key={filter.name}>
-          <Grid item xs={6}>
+          <Grid item xs={8}>
             <DateTimePicker
-              onChange={(value) => setFilterValue(filter.name, [null, value])}
+              onChange={(value) => setFilterValue(filter.name, [value, null])}
               label={filter.getLabel()[0]}
               defaultValue={filter.getValue()[0]}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={8}>
             <DateTimePicker
-              onChange={(value) => setFilterValue(filter.name, [value, null])}
+              onChange={(value) => setFilterValue(filter.name, [null, value])}
               label={filter.getLabel()[1]}
               defaultValue={filter.getValue()[1]}
             />
@@ -33,7 +33,7 @@ const FiltersList = ({ filters, setFilterValue, removeFilter }: Props) => {
       );
     }
     return (
-      <Grid item xs={3} key={filter.name}>
+      <Grid item xs={6} key={filter.name}>
         <TextInput
           label={filter.label}
           defaultValue={filter.getValue()}

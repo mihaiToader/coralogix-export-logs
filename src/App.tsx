@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.global.css';
 import TokePage from './components/pages/TokenPage';
 import SearchPage from './components/pages/SearchPage';

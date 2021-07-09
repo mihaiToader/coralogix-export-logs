@@ -10,6 +10,7 @@ body {
   background: linear-gradient(0deg, rgba(37,170,240,1) 0%, rgba(27,30,181,1) 81%);
   font-family: sans-serif;
   overflow-y: hidden;
+  min-width: 600px;
 }
 
 button {

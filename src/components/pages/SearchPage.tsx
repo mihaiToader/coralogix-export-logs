@@ -6,6 +6,7 @@ import SearchMenu from '../search/SearchMenu';
 import FiltersList from '../search/filters/FiltersList';
 import SearchActionsBar from "../search/filters/SearchActionsBar";
 import useFilters from "../search/filters/useFilters";
+import LogsDisplay from "../search/LogsDisplay";
 
 const useStyles = makeStyles({
   container: {
@@ -25,7 +26,16 @@ const SearchPage = () => {
       <SearchMenu />
       <div className={styles.container}>
         <Grid container spacing={2}>
-          <FiltersList filters={filters} setFilterValue={setFilterValue} removeFilter={removeFilter} />
+          <Grid item xs={6}>
+            <Grid container spacing={2}>
+              <FiltersList filters={filters} setFilterValue={setFilterValue} removeFilter={removeFilter} />
+            </Grid>
+          </Grid>
+          <Grid item xs={6}>
+            <Grid container spacing={2}>
+              <LogsDisplay />
+            </Grid>
+          </Grid>
         </Grid>
       </div>
       <SearchActionsBar filters={filters} addFilter={addFilter} />
