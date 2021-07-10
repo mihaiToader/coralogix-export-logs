@@ -89,10 +89,12 @@ class ElasticSearch {
         timeout: 100000,
         headers: { token: this.token, 'Content-Type': 'application/json' },
       });
-      event.returnValue = await this.client
+      const succeeded = await this.client
         .post('', { size: 1 })
         .then(() => true)
         .catch(() => false);
+
+      event.reply(Channels.SET_TOKEN, succeeded);
     });
 
     ipcMain.on(Channels.MAKE_INITIAL_REQUEST, async (event, filters) => {

@@ -6,10 +6,13 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router-dom';
-import { ipcRenderer } from 'electron';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Channels from '../../common/channels';
 import Footer from '../footer/Footer';
+import Listener from '../messages/Listener';
+import messageManager from '../messages/MessageManager';
+import useRegisterListener from '../messages/useRegisterListener';
 
 const useStyles = makeStyles({
   container: {
@@ -33,21 +36,36 @@ const useStyles = makeStyles({
 const TokePage = () => {
   const styles = useStyles();
   const history = useHistory();
-  const [token, setToken] = React.useState<string | null>(null);
+  const [token, setToken] = React.useState<string | null>(
+    '16a5f025-cccb-2bfa-bc91-ccb6d528b78e'
+  );
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const onSearch = () => {
-    if (!token || !token.trim()) {
-      setError('The token is mandatory!');
-      return;
-    }
-    const succeeded = ipcRenderer.sendSync(Channels.SET_TOKEN, token);
+  const setTokenListener = (_, succeeded: boolean) => {
+    setLoading(false);
     if (succeeded) {
       setError(null);
       history.push('/search');
     } else {
       setError('Token invalid!');
     }
+  };
+
+  useRegisterListener(
+    new Listener(setTokenListener, 'TokePage', Channels.SET_TOKEN)
+  );
+
+  const onSearch = () => {
+    if (loading) {
+      return;
+    }
+    if (!token || !token.trim()) {
+      setError('The token is mandatory!');
+      return;
+    }
+    setLoading(true);
+    messageManager.sendMessage(Channels.SET_TOKEN, token);
   };
 
   return (
@@ -77,7 +95,13 @@ const TokePage = () => {
               className={styles.button}
               onClick={onSearch}
             >
-              Start searching
+              {!loading && <span>Start searching</span>}
+              {loading && (
+                <CircularProgress
+                  style={{ width: '24px', height: '24px' }}
+                  color="secondary"
+                />
+              )}
             </Button>
           </CardContent>
         </Card>
