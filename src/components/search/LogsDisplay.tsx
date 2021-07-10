@@ -18,6 +18,20 @@ const useStyles = makeStyles({
     color: 'white',
     overflow: 'auto',
     fontFamily: 'Courier',
+
+    '&::-webkit-scrollbar-track': {
+      border: '1px solid black',
+      backgroundColor: '#F5F5F5',
+    },
+
+    '&::-webkit-scrollbar': {
+      width: '10px',
+      backgroundColor: '#F5F5F5',
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#000000',
+    },
   },
   error: {
     color: 'red',

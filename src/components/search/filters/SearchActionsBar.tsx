@@ -73,7 +73,7 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
             }}
           />
         </Grid>
-        <Grid item xs={1} className={styles.buttonContainer}>
+        <Grid item xs={1} className={styles.buttonContainer} style={{alignItems: 'center'}}>
           <Tooltip
             title={isPositive ? 'Filter will match' : 'Filter will NOT match'}
           >

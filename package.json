@@ -83,17 +83,9 @@
     },
     "extraResources": [
       "./assets/**"
-    ],
-    "publish": {
-      "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
-    }
+    ]
   },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
-  },
   "keywords": [
     "electron",
     "boilerplate",

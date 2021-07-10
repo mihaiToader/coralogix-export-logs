@@ -36,9 +36,7 @@ const useStyles = makeStyles({
 const TokePage = () => {
   const styles = useStyles();
   const history = useHistory();
-  const [token, setToken] = React.useState<string | null>(
-    '16a5f025-cccb-2bfa-bc91-ccb6d528b78e'
-  );
+  const [token, setToken] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 
