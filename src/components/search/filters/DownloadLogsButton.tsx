@@ -7,11 +7,16 @@ import Channels from '../../../common/channels';
 import Filter from './Filter';
 import serializeFilters from './serializeFilters';
 import Listener from '../../messages/Listener';
-import DownloadState from '../../../common/DownloadState';
+import DownloadStatus from '../../../common/DownloadStatus';
 
 const useStyles = makeStyles({
   button: {
     width: '170px',
+    color: 'white',
+    backgroundColor: 'green',
+  },
+  stopButton: {
+    marginLeft: '10px',
   },
 });
 
@@ -21,15 +26,11 @@ type Props = {
 
 const DownloadLogsButton = ({ filters }: Props) => {
   const styles = useStyles();
-  const [firstDownloadSuccess, setFirstDownload] = React.useState(false);
+  const [downloadStatus, setDownloadStatus] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
-  const firstRequestListener = (_, downloadState: any) => {
-    if (downloadState.type === DownloadState.FIRST_REQUEST_ERROR) {
-      setFirstDownload(false);
-    } else {
-      setFirstDownload(true);
-    }
+  const firstRequestListener = (_, newDownloadStatus: any) => {
+    setDownloadStatus(newDownloadStatus.type);
     setLoading(false);
   };
 
@@ -44,6 +45,9 @@ const DownloadLogsButton = ({ filters }: Props) => {
   });
 
   const onDownload = () => {
+    if (loading) {
+      return;
+    }
     setLoading(true);
     const serializedFilters = serializeFilters(filters);
     messageManager.sendMessage(
@@ -56,22 +60,43 @@ const DownloadLogsButton = ({ filters }: Props) => {
     if (loading) {
       return '';
     }
-    if (firstDownloadSuccess) {
+    if (downloadStatus === DownloadStatus.FIRST_REQUEST_SUCCESS) {
       return 'Continue';
     }
     return 'Download logs';
   };
 
+  const renderSecondButtonText = () => {
+    if (loading) {
+      return null;
+    }
+    if (downloadStatus === DownloadStatus.FIRST_REQUEST_SUCCESS) {
+      return 'Stop';
+    }
+    return null;
+  };
+
   return (
-    <Button
-      variant="contained"
-      color="secondary"
-      className={styles.button}
-      onClick={onDownload}
-    >
-      {renderButtonText()}
-      {loading && <CircularProgress />}
-    </Button>
+    <>
+      <Button
+        variant="contained"
+        className={styles.button}
+        onClick={onDownload}
+      >
+        {renderButtonText()}
+        {loading && <CircularProgress />}
+      </Button>
+      {renderSecondButtonText() && (
+        <Button
+          variant="contained"
+          color="secondary"
+          className={styles.stopButton}
+          onClick={onDownload}
+        >
+          {renderSecondButtonText()}
+        </Button>
+      )}
+    </>
   );
 };
 

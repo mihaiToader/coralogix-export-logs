@@ -7,9 +7,6 @@ import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextInput from '../TextInput';
 import Filter, { FilterType } from './Filter';
-import messageManager from '../../messages/MessageManager';
-import Listener from '../../messages/Listener';
-import Channels from '../../../common/channels';
 import DownloadLogsButton from './DownloadLogsButton';
 
 const useStyles = makeStyles({
@@ -35,18 +32,6 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
   const [filter, setFilter] = React.useState('');
   const [isPositive, setIsPositive] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const listener = new Listener(
-      (_, arg) => console.log(arg),
-      'SearchActionsBar',
-      Channels.MAKE_INITIAL_REQUEST
-    );
-    messageManager.registerListener(listener);
-    return () => {
-      messageManager.removeListener(listener);
-    };
-  }, []);
 
   const addNewFilter = () => {
     if (!filter || !filter.trim()) {
@@ -99,7 +84,7 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
             Add Filter
           </Button>
         </Grid>
-        <Grid item xs={3} className={styles.buttonContainer}>
+        <Grid item xs={4} className={styles.buttonContainer}>
           <DownloadLogsButton filters={filters} />
         </Grid>
       </Grid>

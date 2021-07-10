@@ -6,7 +6,7 @@ import AnimatedDots from '../animations/AnimatedDots';
 import useRegisterListener from '../messages/useRegisterListener';
 import Channels from '../../common/channels';
 import Listener from '../messages/Listener';
-import DownloadState from '../../common/DownloadState';
+import DownloadStatus from '../../common/DownloadStatus';
 import ClearLogsDisplay from './filters/ClearLogsDisplay';
 
 const useStyles = makeStyles({
@@ -50,16 +50,29 @@ const LogsDisplay = () => {
   const logsEndRef = React.useRef(null);
   const [logs, setLogs] = React.useState(startLogs);
 
-  const logsListener = (_, log: any) => {
-    if (!log.value.length) {
-      return;
+  const logsListener = (_, logEvent: any) => {
+    let newLogs = logEvent;
+    if (!newLogs.length) {
+      newLogs = [newLogs];
     }
     setLogs([
       ...logs,
-      ...log.value.map((message: string) => ({
-        error: log.type === DownloadState.SEND_ERROR_LOG,
-        message,
-      })),
+      ...newLogs.reduce((acc: any[], log: any) => {
+        if (log.value.length) {
+          log.value.forEach((message: string) => {
+            acc.push({
+              error: log.type === DownloadStatus.SEND_ERROR_LOG,
+              message,
+            });
+          });
+          return acc;
+        }
+        acc.push({
+          error: log.type === DownloadStatus.SEND_ERROR_LOG,
+          message: log.value,
+        });
+        return acc;
+      }, []),
     ]);
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };

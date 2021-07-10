@@ -15,7 +15,7 @@ import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
-import ElasticSearch from './service/elasticSearch';
+import DownloadLogsService from './service/DownloadLogsService';
 
 export default class AppUpdater {
   constructor() {
@@ -111,8 +111,8 @@ const createWindow = async () => {
   // eslint-disable-next-line
   new AppUpdater();
 
-  const elasticSearch = new ElasticSearch();
-  elasticSearch.setupChannels();
+  const downloadLogsService = new DownloadLogsService();
+  downloadLogsService.setupChannels();
 };
 
 /**
