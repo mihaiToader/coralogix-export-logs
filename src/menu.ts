@@ -155,9 +155,9 @@ export default class MenuBuilder {
       label: 'Help',
       submenu: [
         {
-          label: 'Learn More',
+          label: 'This shit is not working!',
           click() {
-            shell.openExternal('https://electronjs.org');
+            shell.openExternal('https://imgur.com/HADqOSz');
           },
         },
         {
