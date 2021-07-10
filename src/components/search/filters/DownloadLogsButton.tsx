@@ -8,6 +8,7 @@ import Filter from './Filter';
 import serializeFilters from './serializeFilters';
 import Listener from '../../messages/Listener';
 import DownloadStatus from '../../../common/DownloadStatus';
+import useRegisterListener from '../../messages/useRegisterListener';
 
 const useStyles = makeStyles({
   button: {
@@ -34,26 +35,53 @@ const DownloadLogsButton = ({ filters }: Props) => {
     setLoading(false);
   };
 
-  React.useEffect(() => {
-    const listener = new Listener(
+  const requestsEndListener = () => {
+    setLoading(false);
+    setDownloadStatus(null);
+  };
+
+  useRegisterListener(
+    new Listener(
       firstRequestListener,
-      'DownloadLogsButton',
+      'DownloadLogsButton-InitialRequest',
       Channels.MAKE_INITIAL_REQUEST
-    );
-    messageManager.registerListener(listener);
-    return () => messageManager.removeListener(listener);
-  });
+    )
+  );
+
+  useRegisterListener(
+    new Listener(
+      requestsEndListener,
+      'DownloadLogsButton-RequestsEnd',
+      Channels.REQUESTS_END
+    )
+  );
 
   const onDownload = () => {
     if (loading) {
       return;
     }
     setLoading(true);
+
+    if (downloadStatus === DownloadStatus.FIRST_REQUEST_SUCCESS) {
+      messageManager.sendMessage(Channels.TOGGLE_MAKE_REQUEST, true);
+      return;
+    }
+
     const serializedFilters = serializeFilters(filters);
     messageManager.sendMessage(
       Channels.MAKE_INITIAL_REQUEST,
       serializedFilters
     );
+  };
+
+  const onStop = () => {
+    if (downloadStatus === DownloadStatus.FIRST_REQUEST_SUCCESS) {
+      if (loading) {
+        messageManager.sendMessage(Channels.TOGGLE_MAKE_REQUEST, false);
+      } else {
+        setDownloadStatus(null);
+      }
+    }
   };
 
   const renderButtonText = () => {
@@ -67,9 +95,6 @@ const DownloadLogsButton = ({ filters }: Props) => {
   };
 
   const renderSecondButtonText = () => {
-    if (loading) {
-      return null;
-    }
     if (downloadStatus === DownloadStatus.FIRST_REQUEST_SUCCESS) {
       return 'Stop';
     }
@@ -91,7 +116,7 @@ const DownloadLogsButton = ({ filters }: Props) => {
           variant="contained"
           color="secondary"
           className={styles.stopButton}
-          onClick={onDownload}
+          onClick={onStop}
         >
           {renderSecondButtonText()}
         </Button>

@@ -1,8 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import {
-  scheduleDownloadStatusMessage,
-} from './sendDownloadStatusLog';
+import { scheduleDownloadStatusMessage } from './sendDownloadStatusLog';
 
 class WriteLogsToFile {
   fileName: string;
@@ -85,11 +83,10 @@ class WriteLogsToFile {
 
     const jsonData = JSON.parse(existingData);
     jsonData.push(...data);
-    const json = JSON.stringify(jsonData);
 
     scheduleDownloadStatusMessage([`Appending logs to file ${filePath}...`]);
     await fs.promises
-      .writeFile(filePath, JSON.stringify(json))
+      .writeFile(filePath, JSON.stringify(jsonData))
       .then(() => scheduleDownloadStatusMessage(['Logs appended to file!']))
       .catch(() =>
         scheduleDownloadStatusMessage(

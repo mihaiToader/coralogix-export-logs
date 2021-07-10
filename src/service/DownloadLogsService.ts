@@ -12,7 +12,7 @@ import sendDownloadStatusLog, {
 class DownloadLogsService {
   token = '';
 
-  url = 'https://coralogix-esapi.coralogix.com:9443/*/_search';
+  url = 'https://coralogix-esapi.coralogix.com:9443';
 
   client: AxiosInstance | null = null;
 
@@ -63,7 +63,7 @@ class DownloadLogsService {
       'Might take a while...',
     ]);
     const resultLogs = await this.client
-      .post('', this.state.filters, {
+      .post('/*/_search', this.state.filters, {
         params: {
           scroll: '5m',
         },
@@ -136,6 +136,52 @@ class DownloadLogsService {
     });
   }
 
+  async makeNextRequests(event: any) {
+    if (!this.state.filters || !this.client) {
+      return;
+    }
+
+    let { logsReceived } = this.state;
+    while (logsReceived > 0) {
+      if (this.state.stopRequests) {
+        sendDownloadStatusLog(event, ['Requests stopped!'], true);
+        break;
+      }
+
+      const response = await this.client
+        .post('/_search/scroll', this.state.payload)
+        .then(({ data }) => data)
+        .catch(() => {
+          return null;
+        });
+
+      if (!response) {
+        sendDownloadStatusLog(
+          event,
+          ['Something went wrong!', 'God dammit!'],
+          true
+        );
+        break;
+      }
+
+      const { nrHits, logs } = this.parseLogs(response);
+      logsReceived = nrHits;
+      this.state.logsReceived += nrHits;
+      this.state.requestsRemaining -= 1;
+      sendDownloadStatusLog(event, [
+        `Logs remaining: ${this.state.totalLogs - this.state.logsReceived}`,
+        `Requests remaining: ${this.state.requestsRemaining}`,
+      ]);
+      await this.writeService.writeJsonToFile(event, logs);
+      flushDownloadStatusMessages(event);
+    }
+
+    event.reply(Channels.REQUESTS_END, {
+      value: null,
+      type: DownloadStatus.REQUESTS_END,
+    });
+  }
+
   setupChannels() {
     ipcMain.on(Channels.SET_TOKEN, async (event, token) => {
       this.token = token;
@@ -145,7 +191,7 @@ class DownloadLogsService {
         headers: { token: this.token, 'Content-Type': 'application/json' },
       });
       const succeeded = await this.client
-        .post('', { size: 1 })
+        .post('/*/_search', { size: 1 })
         .then(() => true)
         .catch(() => false);
 
@@ -157,6 +203,17 @@ class DownloadLogsService {
       this.state.filters = filters;
       this.writeService.setFileName();
       await this.initialRequest(event);
+    });
+
+    ipcMain.on(Channels.TOGGLE_MAKE_REQUEST, async (event, toggle) => {
+      if (toggle) {
+        await this.makeNextRequests(event);
+      } else {
+        this.state.stopRequests = true;
+        sendDownloadStatusLog(event, [
+          'Stop set, waiting for last request!',
+        ]);
+      }
     });
   }
 }
