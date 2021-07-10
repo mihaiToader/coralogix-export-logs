@@ -141,8 +141,7 @@ class DownloadLogsService {
       return;
     }
 
-    let { logsReceived } = this.state;
-    while (logsReceived > 0) {
+    while (true) {
       if (this.state.stopRequests) {
         sendDownloadStatusLog(event, ['Requests stopped!'], true);
         break;
@@ -165,7 +164,9 @@ class DownloadLogsService {
       }
 
       const { nrHits, logs } = this.parseLogs(response);
-      logsReceived = nrHits;
+      if (nrHits === 0) {
+        break;
+      }
       this.state.logsReceived += nrHits;
       this.state.requestsRemaining -= 1;
       sendDownloadStatusLog(event, [
@@ -180,6 +181,7 @@ class DownloadLogsService {
       value: null,
       type: DownloadStatus.REQUESTS_END,
     });
+    sendDownloadStatusLog(event, [`Finished!`]);
   }
 
   setupChannels() {
@@ -187,7 +189,7 @@ class DownloadLogsService {
       this.token = token;
       this.client = axios.create({
         baseURL: this.url,
-        timeout: 100000,
+        timeout: 1000,
         headers: { token: this.token, 'Content-Type': 'application/json' },
       });
       const succeeded = await this.client
@@ -210,9 +212,7 @@ class DownloadLogsService {
         await this.makeNextRequests(event);
       } else {
         this.state.stopRequests = true;
-        sendDownloadStatusLog(event, [
-          'Stop set, waiting for last request!',
-        ]);
+        sendDownloadStatusLog(event, ['Stop set, waiting for last request!']);
       }
     });
   }

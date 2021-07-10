@@ -109,7 +109,7 @@ const DownloadLogsButton = ({ filters }: Props) => {
         onClick={onDownload}
       >
         {renderButtonText()}
-        {loading && <CircularProgress />}
+        {loading && <CircularProgress color="secondary"/>}
       </Button>
       {renderSecondButtonText() && (
         <Button

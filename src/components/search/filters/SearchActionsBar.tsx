@@ -48,6 +48,7 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
     }
     setError(null);
     setFilter('');
+    setIsPositive(true);
   };
 
   return (
@@ -65,6 +66,11 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
             error={error}
             value={filter}
             showNotIcon={!isPositive}
+            onKeyUp={(event) => {
+              if (event.keyCode === 13) {
+                addNewFilter();
+              }
+            }}
           />
         </Grid>
         <Grid item xs={1} className={styles.buttonContainer}>

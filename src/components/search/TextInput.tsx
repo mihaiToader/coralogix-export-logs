@@ -32,6 +32,7 @@ type Props = {
   value?: string | undefined;
   onClose?: (() => void) | null;
   showNotIcon?: boolean;
+  onKeyUp?: (event: any) => void;
 };
 
 const TextInput = ({
@@ -42,6 +43,7 @@ const TextInput = ({
   value,
   onClose,
   showNotIcon,
+  onKeyUp,
 }: Props) => {
   const styles = useStyles();
 
@@ -69,6 +71,7 @@ const TextInput = ({
           defaultValue={value ? undefined : defaultValue || ''}
           error={!!error}
           helperText={error || ''}
+          onKeyUp={onKeyUp}
         />
       </Paper>
     </Badge>

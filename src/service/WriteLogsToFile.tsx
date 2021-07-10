@@ -37,7 +37,7 @@ class WriteLogsToFile {
     if (fileSize === 0) {
       scheduleDownloadStatusMessage([`Writing logs to file ${filePath}...`]);
       await fs.promises
-        .writeFile(filePath, JSON.stringify(data))
+        .writeFile(filePath, JSON.stringify(data, null, 2))
         .then(() => scheduleDownloadStatusMessage(['Logs saved in file!']))
         .catch(() =>
           scheduleDownloadStatusMessage(
@@ -48,14 +48,14 @@ class WriteLogsToFile {
       return;
     }
 
-    if (Math.floor(fileSize / (1024 * 1024)) >= 30) {
+    if (Math.floor(fileSize / (1024 * 1024)) >= 20) {
       this.fileCount += 1;
       const newFilePath = path.join(this.filePath, this.getFileName());
       scheduleDownloadStatusMessage([
         `Writing in new file ${filePath}, previous exceeded 30MB...`,
       ]);
       await fs.promises
-        .writeFile(newFilePath, JSON.stringify(data))
+        .writeFile(newFilePath, JSON.stringify(data, null, 2))
         .then(() => scheduleDownloadStatusMessage(['Logs saved in file!']))
         .catch(() =>
           scheduleDownloadStatusMessage(
@@ -86,7 +86,7 @@ class WriteLogsToFile {
 
     scheduleDownloadStatusMessage([`Appending logs to file ${filePath}...`]);
     await fs.promises
-      .writeFile(filePath, JSON.stringify(jsonData))
+      .writeFile(filePath, JSON.stringify(jsonData, null, 2))
       .then(() => scheduleDownloadStatusMessage(['Logs appended to file!']))
       .catch(() =>
         scheduleDownloadStatusMessage(
