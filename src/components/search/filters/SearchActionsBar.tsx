@@ -7,10 +7,10 @@ import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextInput from '../TextInput';
 import Filter, { FilterType } from './Filter';
-import messageManager from "../../messages/MessageManager";
-import Listener from "../../messages/Listener";
-import Channels from "../../../common/channels";
-import DownloadLogsButton from "./DownloadLogsButton";
+import messageManager from '../../messages/MessageManager';
+import Listener from '../../messages/Listener';
+import Channels from '../../../common/channels';
+import DownloadLogsButton from './DownloadLogsButton';
 
 const useStyles = makeStyles({
   container: {
@@ -37,7 +37,11 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const listener = new Listener((_, arg) => console.log(arg), 'SearchActionsBar', Channels.MAKE_INITIAL_REQUEST);
+    const listener = new Listener(
+      (_, arg) => console.log(arg),
+      'SearchActionsBar',
+      Channels.MAKE_INITIAL_REQUEST
+    );
     messageManager.registerListener(listener);
     return () => {
       messageManager.removeListener(listener);
@@ -96,7 +100,7 @@ const SearchActionsBar = ({ filters, addFilter }: Props) => {
           </Button>
         </Grid>
         <Grid item xs={3} className={styles.buttonContainer}>
-          <DownloadLogsButton filters={filters}/>
+          <DownloadLogsButton filters={filters} />
         </Grid>
       </Grid>
     </Paper>

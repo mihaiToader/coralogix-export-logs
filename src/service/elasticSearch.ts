@@ -2,7 +2,7 @@ import { ipcMain } from 'electron';
 import axios, { AxiosInstance } from 'axios';
 
 import Channels from '../common/channels';
-import DownloadState from "../common/DownloadState";
+import DownloadState from '../common/DownloadState';
 
 class ElasticSearch {
   token = '';
@@ -42,12 +42,26 @@ class ElasticSearch {
     };
   }
 
+  sendDownloadLog(event: any, log: string[], error = false) {
+    if (error) {
+      event.reply(Channels.DOWNLOAD_LOGS, {
+        value: log,
+        type: DownloadState.SEND_ERROR_LOG,
+      });
+      return;
+    }
+    event.reply(Channels.DOWNLOAD_LOGS, {
+      value: log,
+      type: DownloadState.SEND_LOG,
+    });
+  }
+
   initialRequest(event: any) {
     if (!this.client) {
       return;
     }
 
-    console.log(this.state.filters);
+    this.sendDownloadLog(event, ['', 'Making initial request to coralogix']);
     this.client
       .post('', this.state.filters, {
         params: {
@@ -61,21 +75,29 @@ class ElasticSearch {
         this.state.requestsRemaining = Math.floor(this.state.totalLogs / 5000);
         this.state.payload = this.getPayload(data);
 
-        const messages = [
+        this.sendDownloadLog(event, [
           `Total logs with the given query: ${this.state.totalLogs}`,
-          `Logs remaining: ${
-            this.state.totalLogs - this.state.logsReceived
-          }! Requests remaining: ${this.state.requestsRemaining}!`,
-          `Press continue to download them all, or stop to not...`,
-        ];
+          `Logs remaining: ${this.state.totalLogs - this.state.logsReceived}`,
+          `Requests remaining: ${this.state.requestsRemaining}!`,
+          'Press continue to download them all, or stop to save this ones and cancel the rest',
+        ]);
         event.reply(Channels.MAKE_INITIAL_REQUEST, {
-          value: messages,
+          value: null,
           type: DownloadState.FIRST_REQUEST_SUCCESS,
         });
       })
-      .catch(({ data }) => {
+      .catch(() => {
+        this.sendDownloadLog(
+          event,
+          [
+            'Initial request to coralogix failed!',
+            'Maybe close and reopen the app or change filters :(',
+            'And if that is not working go yell at Mihai :D',
+          ],
+          true
+        );
         event.reply(Channels.MAKE_INITIAL_REQUEST, {
-          value: data,
+          value: null,
           type: DownloadState.FIRST_REQUEST_ERROR,
         });
       });
