@@ -72,7 +72,7 @@ const serializeRangeFilters = (filters?: Filter[], serializedFilters: any) => {
         [filter.name]: {
           gte: filter.getValue()[0],
           lte: filter.getValue()[1],
-          time_zone: '+02:00',
+          time_zone: '+03:00',
         },
       },
     });

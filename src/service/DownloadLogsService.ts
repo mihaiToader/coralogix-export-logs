@@ -34,7 +34,7 @@ class DownloadLogsService {
     const logs: any[] = [];
     hits.forEach((hit: any) => {
       const log = hit._source;
-      log.timestamp = `${log.coralogix.timestamp} +02:00`;
+      log.timestamp = `${log.coralogix.timestamp} +03:00`;
       log.applicationName = log.coralogix.metadata.applicationName;
       delete log.coralogix;
       logs.push(log);
@@ -130,6 +130,14 @@ class DownloadLogsService {
     }
 
     flushDownloadStatusMessages(event);
+    if (this.state.requestsRemaining === 0) {
+      event.reply(Channels.MAKE_INITIAL_REQUEST, {
+        value: null,
+        type: DownloadStatus.FIRST_REQUEST_ALL_HITS,
+      });
+      return;
+    }
+
     event.reply(Channels.MAKE_INITIAL_REQUEST, {
       value: null,
       type: DownloadStatus.FIRST_REQUEST_SUCCESS,
@@ -189,7 +197,7 @@ class DownloadLogsService {
       this.token = token;
       this.client = axios.create({
         baseURL: this.url,
-        timeout: 1000,
+        timeout: 100000,
         headers: { token: this.token, 'Content-Type': 'application/json' },
       });
       const succeeded = await this.client
@@ -209,6 +217,7 @@ class DownloadLogsService {
 
     ipcMain.on(Channels.TOGGLE_MAKE_REQUEST, async (event, toggle) => {
       if (toggle) {
+        sendDownloadStatusLog(event, ['Starting to make the next requests:']);
         await this.makeNextRequests(event);
       } else {
         this.state.stopRequests = true;
